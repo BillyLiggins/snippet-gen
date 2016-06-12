@@ -48,12 +48,23 @@ def getConstrutor(files,classnames):
                 print "basename = ", basename
                 for x in f:
                     if all( xx in x for xx in strlist):
-                        print x
-                        # name= x.split()[1]
-                        # print name
-                        construtors.append(x.rstrip("\n"))
+                        if "virtual" not in x:
+                            print x
+                            # name= x.split()[1]
+                            # print name
+                            construtors.append(x.rstrip("\n"))
     return construtors
 
+def makeSnippet(construtors):
+    """Returns a list of constructors in file"""
+    snippets=[]
+    for construtor in construtors:
+        print "From inside the snippet maker"
+        print construtor.split();
+
+
+    print snippets
+    return snippets
 def main():
     """main function."""
     f=findHead("*.h")
@@ -62,6 +73,7 @@ def main():
     print classnames
     constlist=getConstrutor(f,classnames)
     print constlist
+    makeSnippet(constlist)
     
 if __name__ == '__main__':
     main()
