@@ -33,26 +33,27 @@ def findClassCon(files):
                     name= x.split()[1]
                     print name
                     classnames.append(name)
-    print classnames
     return classnames
 
 def getConstrutor(files,classnames):
     """Returns a list of constructors in file"""
+    construtors=[]
     for name in classnames:
         strlist=[name+"(",";"]
-        construtors=[]
         for file in files:
             with open(file) as f:
                 basename= file.split(".")[0]
-                print "From inside the con finder"
-                print "basename = ", basename
+                # print "basename = ", basename
                 for x in f:
                     if all( xx in x for xx in strlist):
                         if "virtual" not in x:
-                            print x
-                            # name= x.split()[1]
-                            # print name
-                            construtors.append(x.rstrip("\n"))
+                            print "Inside the Loop",x
+                            name= x.split(";")
+                            print name
+                            construtors.append(x.split(";")[0].lstrip(" "))
+                            print "bottom ", x.split(";")[0].lstrip(" ")
+                            print construtors
+                            print "++++++++++++"
     return construtors
 
 def makeSnippet(construtors):
@@ -60,19 +61,29 @@ def makeSnippet(construtors):
     snippets=[]
     for construtor in construtors:
         print "From inside the snippet maker"
-        print construtor.split();
-
-
+        basename= construtor.split("(")[0]
+        varibles= (construtor.split("(")[1]).split(")")[0]
+        # varibles=np.array(varibles.split(","))
+        varibles=varibles.split(",")
+        print basename
+        print varibles
+        print basename+"* "+"${0:name} = new "+basename+"(" 
+        print [i.split(" ")[-1] for i in varibles]
+        print [varibles.index(i) for i in varibles]
+        print ["{"+str(varibles.index(i))+":"+i.split(" ")[-1]+"}" for i in varibles]
     print snippets
     return snippets
+
 def main():
     """main function."""
     f=findHead("*.h")
     findCon(f)
     classnames=findClassCon(f)
     print classnames
+    print "------------------------------------------------------------"
     constlist=getConstrutor(f,classnames)
     print constlist
+    print "------------------------------------------------------------"
     makeSnippet(constlist)
     
 if __name__ == '__main__':
