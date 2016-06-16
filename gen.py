@@ -1,6 +1,7 @@
 ## !/usr/bin/env python
 ## -*- coding: utf-8 -*-
 import numpy as np
+import pprint as pp
 
 import glob
 
@@ -67,12 +68,39 @@ def makeSnippet(construtors):
         varibles=varibles.split(",")
         print basename
         print varibles
-        print basename+"* "+"${0:name} = new "+basename+"(" 
-        print [i.split(" ")[-1] for i in varibles]
-        print [varibles.index(i) for i in varibles]
-        print ["{"+str(varibles.index(i))+":"+i.split(" ")[-1]+"}" for i in varibles]
-    print snippets
+        list1=["${"+str(varibles.index(i)+2)+":"+i.split(" ")[-1]+"}" for i in varibles]
+        print basename+"* "+"${1:name} = new "+basename+"("+",".join(list1)+");"
+        snippets.append(basename+"* "+"${0:name} = new "+basename+"("+",".join(list1)+");")
+        # print [i.split(" ")[-1] for i in varibles]
+        # print [varibles.index(i) for i in varibles]
+        # print ["{"+str(varibles.index(i))+":"+i.split(" ")[-1]+"}" for i in varibles]
+    pp.pprint(snippets)
     return snippets
+
+
+def formatSnippet(snips):
+    """"""
+    snippets=[]
+    first=""
+    counter=0
+    for snip in snips:
+        basename=snip.split("*")[0]
+        if first==basename:
+            counter=counter+1
+        else:
+            counter=0
+        snippets.append("snippet "+basename+str(counter)+"\n\t"+snip+"\n")
+        first=basename         
+        
+    pp.pprint(snippets)
+    return snippets
+
+def printToFile(file,snips):
+    f=open(file,"w+")
+    for snip in snips:
+        f.write(snip)
+    f.close()
+
 
 def main():
     """main function."""
@@ -84,7 +112,9 @@ def main():
     constlist=getConstrutor(f,classnames)
     print constlist
     print "------------------------------------------------------------"
-    makeSnippet(constlist)
+    snips=makeSnippet(constlist)
+    forprint=formatSnippet(snips)
+    printToFile("output.txt",forprint)
     
 if __name__ == '__main__':
     main()
